@@ -1,5 +1,5 @@
 <?php include 'sidebar.php'; ?>
-<!-- <title>Bienvenue sur votre espace de stockage</title> -->
+<!-- <title>Bienvenue sur votre espace de stockage </title> -->
 
   <section class="twitter">
     <div class="container">

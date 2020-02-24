@@ -1,0 +1,20 @@
+table, .margin, .h1-index {
+  margin-left: 350px;
+}
+
+td {
+  white-space: nowrap;
+}
+
+td > img {
+  margin-right: 10px;
+}
+
+.warning-color {
+  background-color: white !important;
+  color: #fb3 !important;
+}
+
+.bg-thead{
+  background-color: #145380 !important;
+}

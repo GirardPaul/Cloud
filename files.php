@@ -43,9 +43,13 @@ if (!(in_array($_FILES['file']['type'], $arr_file_types))) {
 }
 $file = $_FILES['name'];
 
+// var_dump($_SESSION['nom_dossier']);
+// die;
+move_uploaded_file($_FILES['file']['tmp_name'], $test.'/'.$_SESSION['nom_dossier'].'/'.$_FILES['file']['name']);
 
-move_uploaded_file($_FILES['file']['tmp_name'], $test.'/'.$_FILES['file']['name']);
 // .$name.'/'
 // var_dump($_FILES['file']);
 // die;
 echo "Fichier téléchargé.";
+
+?>

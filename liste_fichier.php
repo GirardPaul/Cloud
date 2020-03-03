@@ -1,8 +1,74 @@
 <?php
 session_start();
+
+$name = $_SESSION["name"];
 ?>
 <?php include 'sidebar.php'; ?>
 
+
+<div id="drop_file_zone" ondrop="upload_file(event)" ondragover="return false">
+        <div id="drag_upload_file">
+          <br>
+          <br>
+          <p>Déplacez vos fichiers ici</p>
+          <!-- <p>ou</p>
+          <p><input type="button" class="btn btn-warning" value="Sélectionnez" onclick="file_explorer();"></p>
+          <input type="file" name="file" id="selectfile" multiple> -->
+        </div>
+      </div>
+
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+  let fileobj;
+  
+  function upload_file(e) {
+    e.preventDefault();
+    let dt = e.dataTransfer;
+    let files = dt.files;
+    
+    
+    for (i = 0; i < files.length; i++) {
+      
+      let count = files.length;
+      fileobj = e.dataTransfer.files[i];
+      ajax_file_upload(fileobj);
+
+    }
+  }
+ 
+  function file_explorer() {
+    document.getElementById('selectfile').click();
+    document.getElementById('selectfile').onchange = function(e) {
+
+      for (i = 0; i < files.length; i++) {
+        let dt = e.dataTransfer;
+        let files = dt.files;
+        
+        fileobj = document.getElementById('selectfile').files[i];
+        ajax_file_upload(fileobj);
+      }
+    };
+  }
+ 
+  function ajax_file_upload(file_obj) {
+    if(file_obj != undefined) {
+        var form_data = new FormData();                  
+        form_data.append('file', file_obj);
+      $.ajax({
+        type: 'POST',
+        url: 'files.php',
+        contentType: false,
+        processData: false,
+        data: form_data,
+        success:function(response) {
+      
+          $('#selectfile').val('');
+        }
+      });
+    }
+  }
+</script>
 
 
 <table class="table w-75">
@@ -18,32 +84,30 @@ session_start();
 
   <?php
   
- $adresse="./".$_GET['list']."/"; //Adresse du dossier sans oublier le / à la fin.
+  $list_fold = $_GET['list'];
+  $_SESSION['nom_dossier'] = $_GET['list'];
+//  $adresse="./".$_GET['list']."/"; //Adresse du dossier sans oublier le / à la fin.
+ $adresse = "$name/$list_fold/";
+//  $adresse2 = "./".$_GET['list']."/";
+
+//  var_dump($adresse);
+  //Adresse du dossier sans oublier le / à la fin.
+
  $dossier=Opendir($adresse); //Ouverture du dossier.
  
 
- 
-echo '<div class="margin">
-<form action="" method="post" enctype="multipart/form-data">
-Sélectionner les fichiers à envoyer :
-<input type="file" name="file[]" id="file" multiple>
-<input type="submit" name="submit" value="Envoyer">
-</form> 
-</div>';
+// if(isset($_POST['submit'])){
 
-if(isset($_POST['submit'])){
+//   $countfiles = count($_FILES['file']['name']);
 
-  $countfiles = count($_FILES['file']['name']);
-
-  var_dump($countfiles);
   
   
-  for($i=0;$i<$countfiles;$i++){
+//   for($i=0;$i<$countfiles;$i++){
   
-  $filename = $_FILES['file']['name'][$i];
-  move_uploaded_file($_FILES['file']['tmp_name'][$i],"$adresse./$filename");
-  }
-}
+//   $filename = $_FILES['file']['name'][$i];
+//   move_uploaded_file($_FILES['file']['tmp_name'][$i],"$adresse./$filename");
+//   }
+// }
 
  while ($Fichier = readdir($dossier)) //On affiche les fichiers les uns après les autres.
  {
@@ -56,6 +120,8 @@ if(isset($_POST['submit'])){
 
      if ($Fichier != "." && $Fichier != ".." && $Fichier != ".DS_Store") {
          $_SESSION['name_dossier'] = $_GET['list'];
+
+         
          
          $ext = new SplFileInfo($Fichier);
          $extension = $ext->getExtension();
@@ -64,9 +130,9 @@ if(isset($_POST['submit'])){
 
         if($extension == "docx"){
         
-        echo "<tr> <td class='test1'> <a href='".$adresse.$Fichier."'> <img id='img' width='150px' height='150px' src='https://zupimages.net/up/20/08/klg9.png'> </a><figcaption> ".$Fichier."  </figcaption> </td> <td> ".$result." </td> <td class='text-center'> 
+        echo "<tr> <td class='test1'> <a href='".$adresse.$Fichier."'> <img id='img' width='150px' height='150px' src='https://zupimages.net/up/20/08/klg9.png'> </a><figcaption> ".$Fichier."  </figcaption> </td> <td> ".$result." </td> <td class='text-center'>
         <a  class='far fa-edit 
-        warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse/$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
+        warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
 
        
         }
@@ -74,34 +140,34 @@ if(isset($_POST['submit'])){
 
           echo "<tr> <td class='test1'> <a href='".$adresse.$Fichier."'> <img id='img' width='150px' height='150px' src='https://zupimages.net/up/20/08/6ick.png'> </a><figcaption> ".$Fichier."  </figcaption> </td> <td> ".$result." </td> <td class='text-center'> 
           <a  class='far fa-edit 
-          warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse/$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
+          warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
         }
         else if ($extension == "pdf"){
           echo "<tr> <td class='test1'> <a href='".$adresse.$Fichier."'> <img id='img' width='150px' height='150px' src='https://zupimages.net/up/20/08/wqcr.jpg'> </a><figcaption> ".$Fichier."  </figcaption> </td> <td> ".$result." </td> <td class='text-center'> 
           <a  class='far fa-edit 
-          warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse/$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
+          warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
 
         }
         else if ($extension == "pptx"){
           echo "<tr> <td class='test1'> <a href='".$adresse.$Fichier."'> <img id='img' width='150px' height='150px' src='https://zupimages.net/up/20/08/e78s.jpg'> </a><figcaption> ".$Fichier."  </figcaption> </td> <td> ".$result." </td> <td class='text-center'> 
           <a  class='far fa-edit 
-          warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse/$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
+          warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
 
         }
         else if ($extension == "zip"){
           echo "<tr> <td class='test1'> <a href='".$adresse.$Fichier."'> <img id='img' width='150px' height='150px' src='https://zupimages.net/up/20/08/rq0g.png'> </a><figcaption> ".$Fichier."  </figcaption> </td> <td> ".$result." </td> <td class='text-center'> 
           <a  class='far fa-edit 
-          warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse/$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
+          warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
 
         }
         else if ($extension == "rar"){
           echo "<tr> <td class='test1'> <a href='".$adresse.$Fichier."'> <img id='img' width='150px' height='150px' src='https://zupimages.net/up/20/08/rq0g.png'> </a><figcaption> ".$Fichier."  </figcaption> </td> <td> ".$result." </td> <td class='text-center'> 
           <a  class='far fa-edit 
-          warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse/$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
+          warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
         }
         else {
           echo "<tr> <td class='test1'> <a href='".$adresse.$Fichier."'> <img size='1000' id='img' width='150px' height='150px' src='".$adresse.$Fichier."'> </a><figcaption> ".$Fichier." </figcaption> </td> <td> ".$result." </td> <td class='text-center'>  <a  class='far fa-edit 
-          warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse/$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
+          warning-color btn_edit1' data-file='".$Fichier."' alt='' width='20' height='20' type='button' data-toggle='modal' data-target='#modal-edit1'</a> </td> <td> <a class='fas fa-file-download warning-color' href='".$adresse.$Fichier."' download='".$Fichier."'</a>  <a class='far fa-trash-alt warning-color' href='delete.php?delete=$adresse$Fichier'</a> <span data-toggle='modal' data-target='#modal-delete' </span></td> </tr>";
         }
      }
 }
@@ -174,7 +240,7 @@ if(isset($_POST['send']) AND isset($_COOKIE['Edit'])){
   $new = $_POST['edit2'];
   $old = $_COOKIE['Edit'];
 
-  rename('C:/wamp/www/Explorateur-de-fichiers/'.$adresse.'/'.$old, $adresse.'/'.$new);
+  rename('/Applications/MAMP/htdocs/Explorateur-de-fichiers/'.$adresse.'/'.$old, $adresse.'/'.$new);
 
 }
 closedir($dossier);

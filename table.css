@@ -18,3 +18,9 @@ td > img {
 .bg-thead{
   background-color: #145380 !important;
 }
+
+.bg-blue {
+  background-color: #145380 !important;
+  color: unset !important;
+
+}
